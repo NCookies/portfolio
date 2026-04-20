@@ -13,15 +13,15 @@ export const meta = {
   /** 비워두면 헤더 제목은 `title`을 씁니다. */
   name: "유승우",
   role: "백엔드 개발",
-  /** 프로필 사진 — `public` 기준 경로(예: `/images/profile.png`). 비우면 실루엣 플레이스홀더 */
-  photoSrc: "" as string,
+  /** 프로필 사진 — `public` 기준 경로. 증명사진은 3:4 프레임에 `contain`으로 전체 표시(잘림 없음) */
+  photoSrc: "/images/projects/profile.jpg" as string,
   /** 이름 아래 한 줄(예: 활동·프로젝트 기간). 비우면 미표시 */
   activityPeriod: "",
   /**
    * About 영역 상단에만 쓰는 짧은 한 줄(선택).
-   * 본문 소개는 `summarySegments`에 작성하면 됩니다.
+   * 본문 소개는 `summaryParagraphs`(문단 배열)에 작성하면 됩니다.
    */
-  tagline: "위치 기반 서비스 · 성능 · 인프라 · 메시징",
+  tagline: "",
   /** 이메일 (비우면 미표시) */
   email: "swstar21c@gmail.com",
   /** 휴대폰 등 (비우면 미표시) */
@@ -36,41 +36,69 @@ export const meta = {
   ] satisfies ProfileLink[],
 };
 
-export const summarySegments: RichSegment[] = [
-  { text: "실제 서비스 개발 및 " },
-  { text: "인프라 구축", kind: "keyword" },
-  { text: " 경험을 바탕으로, " },
-  { text: "성능 최적화", kind: "keyword" },
-  { text: "와 " },
-  { text: "아키텍처 개선", kind: "keyword" },
-  {
-    text: "에 강점을 가진 신입 백엔드 개발자입니다. 단순히 기능을 구현하는 것을 넘어, ",
-  },
-  { text: "외부 API", kind: "tech" },
-  { text: "의 한계나 " },
-  { text: "메시지 유실", kind: "keyword" },
-  { text: " 같은 " },
-  { text: "시스템 병목", kind: "keyword" },
-  {
-    text: "을 직접 분석하고 ",
-  },
-  { text: "이중 캐시", kind: "keyword" },
-  { text: ", " },
-  { text: "비동기 파이프라인", kind: "keyword" },
-  {
-    text: " 구축을 통해 주도적으로 해결합니다. 팀 프로젝트에서는 ",
-  },
-  { text: "기술적 원인 분석", kind: "keyword" },
-  { text: "과 " },
-  { text: "코드 리뷰", kind: "keyword" },
-  {
-    text: "를 적극적으로 이끌며 협업 시너지를 냈습니다. 근거 있는 의사결정으로 비즈니스 문제를 해결하고 안정적인 서비스를 제공하는 데 기여하겠습니다.",
-  },
+/** About 본문 — 문단마다 줄바꿈(빈 줄 느낌) */
+export const summaryParagraphs: RichSegment[][] = [
+  [
+    { text: "실서비스와 " },
+    { text: "AWS", kind: "tech" },
+    { text: " 인프라를 함께 다루며, 병목은 기능 추가보다 " },
+    { text: "수치·로그로 먼저", kind: "keyword" },
+    { text: " 확인하고 줄이는 편입니다." },
+  ],
+  [
+    { text: "개인 프로젝트", kind: "keyword" },
+    { text: "(" },
+    { text: "별볼일", kind: "keyword" },
+    { text: ")에서는 외부 날씨 API 한도와 지연을 기준으로 " },
+    { text: "Caffeine·Redis", kind: "tech" },
+    { text: " 이중 캐시를 두어, 동일 조건 " },
+    { text: "100회", kind: "metric" },
+    { text: " 호출 시 응답을 " },
+    { text: "약 19초 → 4초", kind: "metric" },
+    { text: "(" },
+    { text: "약 78%", kind: "metric" },
+    { text: " 단축)까지 줄였습니다." },
+  ],
+  [
+    { text: "팀 프로젝트", kind: "keyword" },
+    { text: "(" },
+    { text: "EZCODE", kind: "keyword" },
+    { text: ")에서는 " },
+    { text: "QueryDSL", kind: "tech" },
+    { text: "로 토론 목록 조회를 " },
+    { text: "314ms → 134ms", kind: "metric" },
+    { text: "(" },
+    { text: "57%", kind: "metric" },
+    { text: " 개선)하고, " },
+    { text: "ActiveMQ", kind: "tech" },
+    { text: "·서킷 브레이커로 알림 경로의 안정성을 맞췄습니다." },
+  ],
+  [
+    { text: "Terraform", kind: "tech" },
+    { text: "으로 " },
+    { text: "EC2·RDS·ElastiCache", kind: "tech" },
+    { text: "를 " },
+    { text: "IaC", kind: "keyword" },
+    {
+      text: "하고, 퍼블릭과 DB·캐시 접근을 나누는 구조까지 설계했습니다.",
+    },
+  ],
+  [
+    { text: "코드 리뷰", kind: "keyword" },
+    { text: "와 " },
+    { text: "장애·이슈 원인 분석", kind: "keyword" },
+    {
+      text: " 회의를 자주 이끌며, 재현 가능한 근거를 남기는 협업을 선호합니다.",
+    },
+  ],
 ];
 
 /** 메타 설명·검색용 등 순수 텍스트 */
-export const summaryPlain = joinPlain(summarySegments);
+export const summaryPlain = summaryParagraphs
+  .map((p) => joinPlain(p))
+  .join(" ");
 
+/** About과 겹치는 수치·서술은 넣지 않고, 스택 이름·역할만 요약 */
 export const techStack: {
   category: string;
   categoryEn: string;
@@ -85,14 +113,8 @@ export const techStack: {
         { text: ", " },
         { text: "Spring Boot", kind: "tech" },
         {
-          text: ": RESTful API 설계 및 계층형 아키텍처(",
+          text: " — REST API, 계층형 구조·도메인 분리, 이벤트·비동기 처리",
         },
-        { text: "Layered Architecture", kind: "tech" },
-        {
-          text: ") 기반 도메인 분리, ",
-        },
-        { text: "비동기 파이프라인", kind: "keyword" },
-        { text: " 구축 경험" },
       ],
     ],
   },
@@ -102,37 +124,23 @@ export const techStack: {
     items: [
       [
         { text: "MySQL", kind: "tech" },
-        { text: " / " },
+        { text: ", " },
         { text: "QueryDSL", kind: "tech" },
-        {
-          text: ": 공간 데이터(",
-        },
+        { text: " — 복잡 조회·" },
         { text: "Spatial", kind: "tech" },
-        {
-          text: ") 활용 및 실행 계획 분석을 통한 다중 서브쿼리 튜닝 경험(응답속도 ",
-        },
-        { text: "57%", kind: "metric" },
-        { text: " 향상)" },
+        { text: ", 실행 계획 기반 튜닝" },
       ],
       [
         { text: "Redis", kind: "tech" },
-        { text: " / " },
+        { text: ", " },
         { text: "Caffeine", kind: "tech" },
-        { text: ": " },
-        { text: "L1-L2 이중 캐시", kind: "keyword" },
-        {
-          text: " 설계를 통한 인스턴스 간 데이터 정합성 확보 및 외부 API 의존성 완화(응답시간 ",
-        },
-        { text: "78%", kind: "metric" },
-        { text: " 단축)" },
+        { text: " — L1–L2 캐시, 인스턴스 간 정합성" },
       ],
       [
         { text: "MongoDB", kind: "tech" },
-        {
-          text: ": 실시간 알림 데이터 적재 및 ",
-        },
-        { text: "멱등성", kind: "keyword" },
-        { text: " 보장 로직 구현" },
+        { text: " — 알림 등 실시간 데이터, " },
+        { text: "멱등", kind: "keyword" },
+        { text: " 처리" },
       ],
     ],
   },
@@ -142,29 +150,22 @@ export const techStack: {
     items: [
       [
         { text: "AWS", kind: "tech" },
-        { text: " (" },
+        { text: ": " },
         { text: "EC2", kind: "tech" },
         { text: ", " },
         { text: "RDS", kind: "tech" },
         { text: ", " },
         { text: "ElastiCache", kind: "tech" },
-        { text: ") / " },
+        { text: " / " },
         { text: "Terraform", kind: "tech" },
-        {
-          text: ": ",
-        },
+        { text: "(" },
         { text: "IaC", kind: "keyword" },
-        {
-          text: "를 활용한 선언적 인프라 자동화 구축 및 웹-DB 간 망 분리 보안 아키텍처 설계",
-        },
+        { text: ") — 망 분리·보안 그룹" },
       ],
       [
         { text: "ActiveMQ", kind: "tech" },
-        {
-          text: ": 메시지 큐 기반 이벤트 브로커 구축 및 ",
-        },
+        { text: " — 메시징, " },
         { text: "서킷 브레이커", kind: "keyword" },
-        { text: " 패턴 적용으로 장애 격리" },
       ],
     ],
   },

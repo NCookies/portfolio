@@ -35,61 +35,84 @@ body {
 .profile-header {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
-  align-items: start;
+  gap: 2rem;
+  align-items: center;
 }
 
 @media (min-width: 768px) {
   .profile-header {
-    grid-template-columns: 200px minmax(0, 1fr);
-    gap: 2rem;
+    grid-template-columns: 152px minmax(0, 1fr);
+    gap: 3rem;
   }
 }
 
-/* 인쇄 / PDF 저장용 */
+/* 인쇄 / PDF — 웹보다 확대되어 페이지가 늘어나는 느낌을 줄이기 위해 조밀하게 */
 @media print {
   @page {
     size: A4;
-    margin: 12mm 14mm;
+    margin: 8mm 10mm;
   }
 
   html {
     scroll-behavior: auto;
     width: 100%;
+    /* 웹(보통 16px) 대비 살짝 축소 → rem 기준 Tailwind 전반적으로 촘촘해짐 */
+    font-size: 87.5%;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   body {
     background: #fff !important;
     color: #0f172a !important;
-    font-size: 10.75pt;
-    line-height: 1.58;
+    font-size: 1rem;
+    line-height: 1.45 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* Chromium 등: 화면과 같은 2열 + 쪽 나눔 방지 */
+  /* 프로필 — 살짝 작게 해 세로 점유 감소 */
   .profile-header {
     display: grid !important;
-    grid-template-columns: 26mm 1fr !important;
-    gap: 0 8mm !important;
-    align-items: start !important;
+    grid-template-columns: 136px minmax(0, 1fr) !important;
+    gap: 2rem !important;
+    align-items: center !important;
     max-width: 100% !important;
+    margin-bottom: 1.5rem !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
 
   .profile-header-photo {
-    width: 26mm !important;
-    max-width: 26mm !important;
-    min-width: 26mm !important;
-    height: 26mm !important;
+    width: 136px !important;
+    max-width: 136px !important;
+    min-width: 136px !important;
     margin: 0 !important;
-    aspect-ratio: 1 / 1 !important;
+    aspect-ratio: 3 / 4 !important;
+    height: auto !important;
   }
 
+  /* 섹션 간격: mb-12/14 등이 PDF에서 과하게 크게 느껴질 때 */
+  main > header {
+    margin-bottom: 1.25rem !important;
+  }
+
+  main > section {
+    margin-bottom: 1.5rem !important;
+  }
+
+  /* 본문 폭 */
   main {
-    max-width: 100% !important;
+    box-sizing: border-box;
     width: 100% !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    max-width: min(56rem, 100%) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-bottom: 1rem !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .no-print {
@@ -119,6 +142,7 @@ body {
   .shadow-card {
     box-shadow: none !important;
     border: 1px solid #e2e8f0 !important;
+    padding: 1.125rem 1.25rem !important;
   }
 
   /* 인쇄·PDF에서 색/이미지 누락 완화 (특히 Chromium) */

@@ -2,15 +2,19 @@ import Image from "next/image";
 import { RichText } from "@/components/RichText";
 import { ZoomableImage } from "@/components/ZoomableImage";
 import { joinPlain } from "@/lib/portfolio-types";
-import { meta, projects, summarySegments, techStack } from "@/lib/portfolio";
+import { meta, projects, summaryParagraphs, techStack } from "@/lib/portfolio";
 
 /** 본문·설명문 공통: 한글 장문 가독성 */
 const bodyText =
-  "text-[0.9375rem] leading-[1.8] text-slate-600 sm:text-base sm:leading-[1.78] print:text-[10.75pt] print:leading-[1.58] print:text-slate-800";
+  "text-[0.9375rem] leading-[1.8] text-slate-600 sm:text-base sm:leading-[1.78] print:text-slate-800";
+
+/** About만 길게 읽히는 문단 — 한 단계 크게·줄간격 여유 */
+const aboutText =
+  "text-base leading-[1.85] text-slate-600 sm:leading-[1.82] print:text-slate-800";
 
 /** 이력서형 섹션 제목 — 참고 레이아웃처럼 강조색 */
 const sectionTitle =
-  "mb-5 border-b border-red-200/90 pb-3 text-xl font-bold tracking-tight text-red-700 print:mb-4 print:border-red-200 print:text-[12.5pt]";
+  "mb-5 border-b border-red-200/90 pb-3 text-xl font-bold tracking-tight text-red-700 print:mb-4 print:border-red-200";
 
 const activeLinks = meta.links.filter((l) => l.href?.trim());
 const showContactBlock =
@@ -33,10 +37,10 @@ export default function Home() {
         → 대상에서 &quot;PDF로 저장&quot; · 여백: 기본
       </p>
 
-      <main className="mx-auto max-w-4xl px-5 pb-24 pt-6 sm:px-6 print:max-w-none print:px-0 print:pb-0 print:pt-5">
-        <header className="profile-header mb-12 border-b border-slate-200/90 pb-9 print:mb-8 print:pb-6">
+      <main className="mx-auto max-w-4xl px-5 pb-24 pt-6 sm:px-6 print:pt-5">
+        <header className="profile-header mb-12 print:mb-10">
           {/* 왼쪽: 사진만 · 오른쪽: 이름 ↓ 이메일 ↓ 링크 (화면·PDF 동일 구조) */}
-          <div className="profile-header-photo relative mx-auto aspect-square w-full max-w-[200px] shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 md:mx-0 md:w-[200px] md:max-w-[200px] print:mx-0">
+          <div className="profile-header-photo relative mx-auto aspect-[3/4] w-full max-w-[152px] shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 md:mx-0 md:w-[152px] md:max-w-[152px] print:mx-0">
             {meta.photoSrc?.trim() ? (
               <Image
                 src={meta.photoSrc.trim()}
@@ -45,10 +49,10 @@ export default function Home() {
                     ? `${meta.name.trim()} 프로필`
                     : "프로필 사진"
                 }
-                width={400}
-                height={400}
-                className="h-full w-full object-cover"
-                sizes="(max-width: 768px) 70vw, 200px"
+                width={228}
+                height={304}
+                className="h-full w-full object-contain object-top"
+                sizes="(max-width: 768px) 45vw, 152px"
                 priority
                 quality={92}
               />
@@ -74,29 +78,29 @@ export default function Home() {
 
           <div className="min-w-0 space-y-4 text-left text-slate-800">
             <div>
-              <h1 className="text-[1.5rem] font-bold leading-snug tracking-tight text-slate-900 sm:text-2xl print:text-[16pt]">
+              <h1 className="text-[1.5rem] font-bold leading-snug tracking-tight text-slate-900 sm:text-2xl">
                 {meta.name?.trim() ? meta.name : meta.title}
               </h1>
-              <p className="mt-1.5 text-sm font-semibold text-slate-800 print:text-[10.5pt]">
+              <p className="mt-1.5 text-sm font-semibold text-slate-800">
                 {meta.role}
               </p>
               {meta.activityPeriod?.trim() ? (
-                <p className="mt-1 text-xs text-slate-500 print:text-[9pt]">
+                <p className="mt-1 text-xs text-slate-500">
                   {meta.activityPeriod.trim()}
                 </p>
               ) : null}
             </div>
 
             {showContactBlock ? (
-              <div className="space-y-3 border-t border-slate-200 pt-4 text-sm print:space-y-2.5 print:border-slate-300 print:pt-3">
+              <div className="space-y-3 border-t border-slate-200 pt-4 text-sm print:border-slate-300">
                 {meta.email?.trim() ? (
                   <div>
-                    <p className="text-[11px] font-medium text-slate-500 print:text-[9pt]">
+                    <p className="text-[11px] font-medium text-slate-500">
                       Email
                     </p>
                     <a
                       href={`mailto:${meta.email.trim()}`}
-                      className="mt-0.5 block break-all text-slate-900 underline decoration-slate-300 underline-offset-2 print:text-[10.5pt]"
+                      className="mt-0.5 block break-all text-slate-900 underline decoration-slate-300 underline-offset-2"
                     >
                       {meta.email.trim()}
                     </a>
@@ -104,12 +108,12 @@ export default function Home() {
                 ) : null}
                 {meta.phone?.trim() ? (
                   <div>
-                    <p className="text-[11px] font-medium text-slate-500 print:text-[9pt]">
+                    <p className="text-[11px] font-medium text-slate-500">
                       Phone
                     </p>
                     <a
                       href={`tel:${meta.phone.trim().replace(/\s/g, "")}`}
-                      className="mt-0.5 block underline decoration-slate-300 underline-offset-2 print:text-[10.5pt]"
+                      className="mt-0.5 block underline decoration-slate-300 underline-offset-2"
                     >
                       {meta.phone.trim()}
                     </a>
@@ -119,14 +123,14 @@ export default function Home() {
                   const url = link.href.trim();
                   return (
                     <div key={url}>
-                      <p className="text-[11px] font-medium text-slate-500 print:text-[9pt]">
+                      <p className="text-[11px] font-medium text-slate-500">
                         {link.label}
                       </p>
                       <a
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-0.5 block break-all font-mono text-[0.8125rem] leading-relaxed text-slate-800 underline decoration-slate-300 underline-offset-[3px] print:text-[9.5pt] print:decoration-slate-400"
+                        className="mt-0.5 block break-all font-mono text-[0.8125rem] leading-relaxed text-slate-800 underline decoration-slate-300 underline-offset-[3px]"
                       >
                         {url}
                       </a>
@@ -141,12 +145,16 @@ export default function Home() {
         <section className="avoid-break mb-14 w-full print:mb-12">
           <h2 className={sectionTitle}>About</h2>
           {meta.tagline?.trim() ? (
-            <p className="mb-4 text-sm font-medium leading-relaxed text-slate-800 print:text-[10.75pt]">
+            <p className="mb-4 text-sm font-medium leading-relaxed text-slate-800">
               {meta.tagline.trim()}
             </p>
           ) : null}
-          <div className={`${bodyText} text-pretty max-w-none`}>
-            <RichText segments={summarySegments} />
+          <div className={`${aboutText} text-pretty max-w-none`}>
+            {summaryParagraphs.map((para, i) => (
+              <p key={i} className="mb-4 last:mb-0">
+                <RichText segments={para} />
+              </p>
+            ))}
           </div>
         </section>
 
@@ -155,7 +163,7 @@ export default function Home() {
           <div className="space-y-10 print:space-y-8">
             {techStack.map((group) => (
               <div key={group.category} className="avoid-break">
-                <h3 className="mb-3.5 text-[1.05rem] font-semibold text-slate-900 print:text-[11.5pt]">
+                <h3 className="mb-3.5 text-[1.05rem] font-semibold text-slate-900">
                   {group.category}
                   <span className="ml-2 text-sm font-normal text-slate-500">
                     ({group.categoryEn})
@@ -191,7 +199,7 @@ export default function Home() {
                 <div className="shadow-card rounded-2xl border border-slate-200/90 bg-white p-7 shadow-[0_1px_3px_rgba(15,23,42,0.06)] sm:p-8 print:border print:p-6 print:shadow-none">
                   <div className="mb-6 flex flex-col gap-2 border-b border-slate-100 pb-5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                     <div className="min-w-0">
-                      <h3 className="text-[1.35rem] font-bold leading-tight text-slate-900 print:text-[13pt]">
+                      <h3 className="text-[1.35rem] font-bold leading-tight text-slate-900">
                         {project.name}
                       </h3>
                       <p className="mt-2 text-sm leading-relaxed text-slate-500">
@@ -231,7 +239,7 @@ export default function Home() {
                         key={joinPlain(h.title)}
                         className="avoid-break rounded-xl border border-slate-100 bg-slate-50/80 p-4 sm:p-5 print:border-slate-200 print:bg-white"
                       >
-                        <div className="mb-2 text-sm leading-snug text-slate-900 print:text-[10.75pt]">
+                        <div className="mb-2 text-sm leading-snug text-slate-900">
                           <RichText segments={h.title} />
                         </div>
                         <p className={bodyText}>
@@ -273,7 +281,7 @@ export default function Home() {
                               key={block.title}
                               className="avoid-break py-4 first:pt-0 last:pb-0"
                             >
-                              <p className="mb-2.5 text-sm font-semibold text-slate-900 print:text-[10.75pt]">
+                              <p className="mb-2.5 text-sm font-semibold text-slate-900">
                                 {block.title}
                               </p>
                               <ul className="list-disc space-y-2 pl-4 marker:text-indigo-400 sm:pl-5">
