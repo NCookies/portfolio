@@ -1,26 +1,130 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --accent: #1d4ed8;
+  --card: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-noto);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-noto), system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+  hyphens: none;
+}
+
+/* 프로필 상단: 인쇄 시에도 화면과 같은 2열 느낌으로 고정 */
+.profile-header {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 768px) {
+  .profile-header {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* 인쇄 / PDF 저장용 */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm 14mm;
+  }
+
+  html {
+    scroll-behavior: auto;
+    width: 100%;
+  }
+
+  body {
+    background: #fff !important;
+    color: #0f172a !important;
+    font-size: 10.75pt;
+    line-height: 1.58;
+  }
+
+  /* Chromium 등: 화면과 같은 2열 + 쪽 나눔 방지 */
+  .profile-header {
+    display: grid !important;
+    grid-template-columns: 26mm 1fr !important;
+    gap: 0 8mm !important;
+    align-items: start !important;
+    max-width: 100% !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .profile-header-photo {
+    width: 26mm !important;
+    max-width: 26mm !important;
+    min-width: 26mm !important;
+    height: 26mm !important;
+    margin: 0 !important;
+    aspect-ratio: 1 / 1 !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-break {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  .avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* 본문 링크 — 인쇄 시에도 식별 가능 (연락처는 본문에 URL이 이미 표기됨) */
+  main a[href^="mailto:"],
+  main a[href^="tel:"],
+  main a[href^="http://"],
+  main a[href^="https://"] {
+    color: #0f172a !important;
+    text-decoration: underline !important;
+    text-underline-offset: 2px;
+  }
+
+  .shadow-card {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  /* 인쇄·PDF에서 색/이미지 누락 완화 (특히 Chromium) */
+  img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact;
+    page-break-inside: avoid;
+  }
 }
