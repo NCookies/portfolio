@@ -531,6 +531,7 @@ export const projects: Project[] = [
             { text: " (" },
             { text: "57% 향상", kind: "metric" },
             { text: ") 달성." },
+            { text: " " }
           ],
         },
       },
@@ -600,6 +601,12 @@ export const projects: Project[] = [
             },
             { text: "메시징", kind: "keyword" },
             { text: " 파이프라인 완성." },
+            { text: " " },
+            {
+              text: "(관련 블로그 글)",
+              kind: "keyword",
+              href: "https://velog.io/@ncookie/ezcode-%EC%95%8C%EB%A6%BC-%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%9E%A5%EC%95%A0-%EB%8C%80%EC%9D%91-%EB%B0%8F-%EC%9E%AC%EC%B2%98%EB%A6%AC-%EB%A1%9C%EC%A7%81-%EC%A0%81%EC%9A%A9",
+            },
           ],
         },
       },

@@ -71,8 +71,16 @@ export default function Home() {
         +{" "}
         <kbd className="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-sans text-slate-700 shadow-sm">
           P
-        </kbd>{" "}
-        → 대상에서 &quot;PDF로 저장&quot; · 여백: 기본
+        </kbd>
+        {" → "}
+        <strong className="font-semibold text-slate-600">
+          대상을 「PDF로 저장」(Chrome/Edge)
+        </strong>
+        로 선택
+        <span className="mx-1 text-slate-400">·</span>
+        Windows「Microsoft 인쇄 PDF」는 링크가 빠지는 경우가 많음
+        <span className="mx-1 text-slate-400">·</span>
+        여백: 기본
       </p>
 
       <main className="mx-auto max-w-4xl px-5 pb-24 pt-6 sm:px-6 print:pt-5">
