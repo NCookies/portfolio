@@ -69,25 +69,6 @@ export default function Home() {
           <ThemeToggle />
         </div>
       </div>
-      <p className="no-print mx-auto max-w-2xl px-4 pt-4 text-center text-xs leading-relaxed text-slate-500 dark:text-slate-400 sm:pt-5">
-        PDF 저장:{" "}
-        <kbd className="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-sans text-slate-700 shadow-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
-          Ctrl
-        </kbd>{" "}
-        +{" "}
-        <kbd className="rounded border border-slate-300 bg-white px-1.5 py-0.5 font-sans text-slate-700 shadow-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
-          P
-        </kbd>
-        {" → "}
-        <strong className="font-semibold text-slate-600 dark:text-slate-300">
-          대상을 「PDF로 저장」(Chrome/Edge)
-        </strong>
-        로 선택
-        <span className="mx-1 text-slate-400 dark:text-slate-500">·</span>
-        Windows「Microsoft 인쇄 PDF」는 링크가 빠지는 경우가 많음
-        <span className="mx-1 text-slate-400 dark:text-slate-500">·</span>
-        여백: 기본
-      </p>
 
       <main className="mx-auto max-w-4xl px-5 pb-24 pt-6 sm:px-6 print:pt-5">
         <header className="profile-header mb-12 print:mb-10">
@@ -438,10 +419,6 @@ export default function Home() {
             ))}
           </div>
         </section>
-
-        <footer className="no-print mt-20 border-t border-slate-200/90 pt-8 text-center text-xs text-slate-400 dark:border-slate-700 dark:text-slate-500">
-          {meta.title} · Next.js · Vercel 배포 가능
-        </footer>
       </main>
     </div>
   );
