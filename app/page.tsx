@@ -1,7 +1,7 @@
 import Image from "next/image";
+import { Fragment } from "react";
 import { RichText } from "@/components/RichText";
 import { ZoomableImage } from "@/components/ZoomableImage";
-import { joinPlain } from "@/lib/portfolio-types";
 import { meta, projects, summaryParagraphs, techStack } from "@/lib/portfolio";
 
 /** 본문·설명문 공통: 한글 장문 가독성 */
@@ -21,6 +21,47 @@ const showContactBlock =
   Boolean(meta.email?.trim()) ||
   Boolean(meta.phone?.trim()) ||
   activeLinks.length > 0;
+
+/** 트러블슈팅 4단계 pill (한글 2자 기준 너비 통일) */
+const troubleshootPill = {
+  problem:
+    "bg-rose-900/95 text-rose-50 ring-1 ring-rose-800/60 print:bg-rose-900 print:text-rose-50",
+  approach:
+    "bg-amber-800/95 text-amber-50 ring-1 ring-amber-700/50 print:bg-amber-900 print:text-amber-50",
+  solution:
+    "bg-emerald-800/95 text-emerald-50 ring-1 ring-emerald-700/50 print:bg-emerald-900 print:text-emerald-50",
+  result:
+    "bg-indigo-900/95 text-indigo-100 ring-1 ring-indigo-800/50 print:bg-indigo-950 print:text-indigo-100",
+} as const;
+
+/** keywordParagraphs — 행마다 다른 색 */
+const keywordPillRotate = [
+  "bg-rose-900/95 text-rose-50 ring-1 ring-rose-800/60 print:bg-rose-900 print:text-rose-50",
+  "bg-indigo-900/95 text-indigo-100 ring-1 ring-indigo-800/50 print:bg-indigo-950 print:text-indigo-100",
+  "bg-emerald-800/95 text-emerald-50 ring-1 ring-emerald-700/50 print:bg-emerald-900 print:text-emerald-50",
+] as const;
+
+/** 태그는 본문 블록 상단(첫 줄)과 맞춤 — 영역 구분이 분명해짐 */
+const troubleshootingGrid =
+  "grid grid-cols-1 gap-y-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start sm:gap-x-4 sm:gap-y-3.5";
+
+const keywordGrid =
+  "grid grid-cols-1 gap-y-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start sm:gap-x-4 sm:gap-y-3.5";
+
+/**
+ * 본문 첫 줄 앞의 line-box 여백(반줄 간격)과 맞추기.
+ * padding-top은 pill 배경이 셀 맨 위부터 그려져 효과가 안 보임 → margin-top으로 블록 전체를 내림.
+ */
+const pillAlignTop = "sm:mt-[7px] print:mt-[6px]";
+
+const pillTagTrouble = `inline-flex w-fit max-w-full shrink-0 select-none items-center justify-center justify-self-start rounded-full px-2.5 py-1.5 text-center text-xs font-bold leading-tight tracking-tight sm:px-2 sm:py-1.5 sm:text-[13px] ${pillAlignTop}`;
+
+const pillTagKeyword = `inline-flex w-fit max-w-full shrink-0 select-none items-center justify-center justify-self-start rounded-full px-3 py-1.5 text-center text-xs font-bold leading-snug sm:max-w-[11rem] sm:text-[13px] ${pillAlignTop}`;
+
+/** 본문 상단 패딩 제거 — 줄간격(line-height)만 쓰고 태그 첫 줄과 높이 맞춤 */
+const bodyTroubleP = `${bodyText} m-0 min-w-0 p-0 pt-0 whitespace-pre-line self-start`;
+
+const bodyKeywordP = `${bodyText} m-0 min-w-0 p-0 pt-0 whitespace-pre-line self-start`;
 
 export default function Home() {
   return (
@@ -185,7 +226,7 @@ export default function Home() {
         </section>
 
         <section className="print-break">
-          <h2 className={`${sectionTitle} mb-8 print:mb-6`}>경력 및 프로젝트</h2>
+          <h2 className={`${sectionTitle} mb-8 print:mb-6`}>프로젝트</h2>
           <div className="space-y-14 print:space-y-10">
             {projects.map((project, index) => (
               <article
@@ -234,24 +275,89 @@ export default function Home() {
                     핵심 성과
                   </h4>
                   <div className="mb-8 space-y-4 print:mb-7">
-                    {project.highlights.map((h) => (
+                    {project.highlights.map((h, hi) => (
                       <div
-                        key={joinPlain(h.title)}
+                        key={`${project.id}-highlight-${hi}`}
                         className="avoid-break rounded-xl border border-slate-100 bg-slate-50/80 p-4 sm:p-5 print:border-slate-200 print:bg-white"
                       >
                         <div className="mb-2 text-sm leading-snug text-slate-900">
                           <RichText segments={h.title} />
                         </div>
-                        <p className={bodyText}>
-                          <RichText segments={h.body} />
-                        </p>
+                        {h.troubleshooting ? (
+                          <div className={troubleshootingGrid}>
+                            {(
+                              [
+                                {
+                                  tag: "문제",
+                                  pill: troubleshootPill.problem,
+                                  segments: h.troubleshooting.problem,
+                                },
+                                {
+                                  tag: "접근",
+                                  pill: troubleshootPill.approach,
+                                  segments: h.troubleshooting.thinking,
+                                },
+                                {
+                                  tag: "해결",
+                                  pill: troubleshootPill.solution,
+                                  segments: h.troubleshooting.solution,
+                                },
+                                {
+                                  tag: "결과",
+                                  pill: troubleshootPill.result,
+                                  segments: h.troubleshooting.result,
+                                  metricClass:
+                                    "font-bold text-blue-600 print:text-blue-700",
+                                },
+                              ] satisfies {
+                                tag: string;
+                                pill: string;
+                                segments: (typeof h.troubleshooting)["problem"];
+                                metricClass?: string;
+                              }[]
+                            ).map((row) => (
+                              <Fragment key={row.tag}>
+                                <span
+                                  className={`${pillTagTrouble} ${row.pill}`}
+                                >
+                                  {row.tag}
+                                </span>
+                                <p className={`${bodyTroubleP} print:text-slate-800`}>
+                                  <RichText
+                                    segments={row.segments}
+                                    metricClassName={row.metricClass}
+                                  />
+                                </p>
+                              </Fragment>
+                            ))}
+                          </div>
+                        ) : h.keywordParagraphs ? (
+                          <div className={keywordGrid}>
+                            {h.keywordParagraphs.map((kp, ki) => (
+                              <Fragment key={kp.keyword}>
+                                <span
+                                  className={`${pillTagKeyword} ${keywordPillRotate[ki % keywordPillRotate.length]}`}
+                                >
+                                  {kp.keyword}
+                                </span>
+                                <p className={bodyKeywordP}>
+                                  <RichText segments={kp.segments} />
+                                </p>
+                              </Fragment>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className={bodyText}>
+                            <RichText segments={h.body ?? []} />
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
 
                   {project.architecture ? (
                     <section
-                      className="print-break avoid-break mb-8 print:mb-7"
+                      className="avoid-break mb-8 print:mb-7"
                       aria-labelledby={`arch-heading-${project.id}`}
                     >
                       <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06)] print:border print:shadow-none">

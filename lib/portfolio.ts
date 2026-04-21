@@ -171,9 +171,26 @@ export const techStack: {
   },
 ];
 
+/** 트러블슈팅 4단계(문제 → 판단 → 해결 → 결과) */
+export type ProjectTroubleshooting = {
+  problem: RichSegment[];
+  thinking: RichSegment[];
+  solution: RichSegment[];
+  result: RichSegment[];
+};
+
+/** 한 카드 안에서 키워드별 단락 구분 (예: EZCODE 조회 vs MQ) */
+export type ProjectKeywordParagraph = {
+  keyword: string;
+  segments: RichSegment[];
+};
+
 export type ProjectHighlight = {
   title: RichSegment[];
-  body: RichSegment[];
+  /** 기본 단일 문단 — `troubleshooting`·`keywordParagraphs`가 없을 때 사용 */
+  body?: RichSegment[];
+  troubleshooting?: ProjectTroubleshooting;
+  keywordParagraphs?: ProjectKeywordParagraph[];
 };
 
 /** 시스템 아키텍처 다이어그램 + 요약 불릿 */
@@ -211,38 +228,109 @@ export const projects: Project[] = [
     name: "별볼일",
     subtitle:
       "위치 기반 별 관측 적합도 분석 및 북마크 추천 백엔드 서비스",
-    period: "2025.12 – 2026.01 (2개월)",
+    period: "2025.12 – 2026.01 (6주)",
     overview: [
       { text: "위치 기반 별 관측 적합도 분석 및 추천", kind: "keyword" },
-      {
-        text: "을 제공하는 백엔드 시스템 및 인프라 구축 (개인 프로젝트)",
-      },
+      { text: "을 제공하는 백엔드 (" },
+      { text: "개인 프로젝트", kind: "keyword" },
+      { text: ", " },
+      { text: "기여도 100%", kind: "metric" },
+      { text: ") 및 인프라 구축" },
     ],
     role: [
-      { text: "외부 날씨 API", kind: "tech" },
       {
-        text: " 연동 과정에서 발생하는 ",
+        text: "실제 트래픽 규모를 가정해 ",
       },
-      { text: "병목 지점", kind: "keyword" },
+      { text: "외부 API 한도", kind: "keyword" },
+      { text: "·" },
+      { text: "수평 확장", kind: "keyword" },
       {
-        text: "을 직접 분석하고, ",
+        text: " 관점에서 ",
       },
-      { text: "이중 캐시", kind: "keyword" },
-      { text: "와 " },
-      { text: "병렬 처리", kind: "keyword" },
+      { text: "병목을 먼저 정의", kind: "keyword" },
       {
-        text: "를 통한 성능 최적화를 주도적으로 이끌어냄 / ",
+        text: "하고, 이중 캐시·트래픽 제어·병렬 처리로 해결. ",
       },
       { text: "Terraform", kind: "tech" },
-      {
-        text: " 기반 ",
-      },
+      { text: " 기반 " },
       { text: "AWS", kind: "tech" },
       {
         text: " 인프라 자동화 및 보안 망 분리 설계",
       },
     ],
     highlights: [
+      {
+        title: [
+          { text: "[" },
+          { text: "트러블슈팅 1", kind: "keyword" },
+          {
+            text: "] 외부 날씨 API 한도 제한 및 응답 지연 극복",
+          },
+        ],
+        troubleshooting: {
+          problem: [
+            {
+              text: "관측지 점수 계산 시 외부 날씨 API(",
+            },
+            { text: "OpenWeatherMap", kind: "tech" },
+            { text: ")의 분당 " },
+            { text: "60회", kind: "metric" },
+            {
+              text: " 호출 제한으로 인해, 북마크가 많아질수록 API 병목 및 한도 초과 오류(",
+            },
+            { text: "Rate Limit", kind: "keyword" },
+            { text: ") 발생 위험." },
+          ],
+          thinking: [
+            {
+              text: "불필요한 API 호출을 원천 차단하는 ",
+            },
+            { text: "캐싱", kind: "keyword" },
+            {
+              text: "과, 불가피한 호출을 안전하게 제어하는 ",
+            },
+            { text: "병렬 처리", kind: "keyword" },
+            {
+              text: " 전략을 동시 적용.",
+            },
+          ],
+          solution: [
+            { text: "이중 캐시", kind: "keyword" },
+            { text: "(Dual Cache) " },
+            {
+              text: "아키텍처: ",
+            },
+            { text: "L1(Caffeine, 5분)", kind: "tech" },
+            { text: " + " },
+            { text: "L2(Redis, 1시간)", kind: "tech" },
+            {
+              text: " 조합으로 구성해, 동일 위치 조회 시 API 호출을 막고 인스턴스 간 데이터 정합성 유지.\n\n",
+            },
+            { text: "트래픽 제어 및 병렬 처리", kind: "keyword" },
+            { text: ": " },
+            { text: "Bucket4j", kind: "tech" },
+            {
+              text: "로 분당 토큰 소비를 제어하고, ",
+            },
+            { text: "CompletableFuture", kind: "tech" },
+            {
+              text: "와 스레드 풀을 활용해 허용된 한도 내에서 점수 계산 로직을 병렬로 수행.",
+            },
+          ],
+          result: [
+            { text: "추천 API", kind: "keyword" },
+            { text: " " },
+            { text: "100회", kind: "metric" },
+            { text: " 호출 기준 응답 시간 " },
+            { text: "19초 → 4초", kind: "metric" },
+            { text: " (" },
+            { text: "78% 단축", kind: "metric" },
+            {
+              text: "). API 한도 초과 상황에서도 메인 서비스가 중단되지 않는 견고한 아키텍처 확보.",
+            },
+          ],
+        },
+      },
       {
         title: [
           { text: "[" },
@@ -254,7 +342,7 @@ export const projects: Project[] = [
         body: [
           { text: "Terraform", kind: "tech" },
           {
-            text: "을 활용해 ",
+            text: "으로 ",
           },
           { text: "AWS", kind: "tech" },
           { text: "(" },
@@ -264,89 +352,27 @@ export const projects: Project[] = [
           { text: ", " },
           { text: "ElastiCache", kind: "tech" },
           {
-            text: ") 인프라를 코드화(",
+            text: ") ",
           },
           { text: "IaC", kind: "keyword" },
           {
-            text: ")하여 선언적으로 구축했습니다. 특히 ",
+            text: " 구축. ",
           },
           { text: "RDS", kind: "tech" },
-          { text: "와 " },
+          { text: "·" },
           { text: "Redis", kind: "tech" },
           {
-            text: "의 보안 그룹을 ",
+            text: "는 ",
           },
           { text: "EC2", kind: "tech" },
           {
-            text: "에서만 접근 가능하도록 제한해, 공개망으로부터 ",
+            text: "에서만 접근 가능하도록 보안 그룹을 제한해 공개망으로부터 ",
           },
           { text: "DB", kind: "keyword" },
-          { text: "와 " },
+          { text: "·" },
           { text: "캐시", kind: "keyword" },
           {
-            text: "를 안전하게 격리하는 아키텍처를 직접 설계했습니다.",
-          },
-        ],
-      },
-      {
-        title: [
-          { text: "[" },
-          { text: "성능 최적화", kind: "keyword" },
-          { text: " 및 " },
-          { text: "이중 캐시", kind: "keyword" },
-          { text: " 구축]" },
-        ],
-        body: [
-          { text: "외부 API", kind: "tech" },
-          {
-            text: " 호출 지연 문제를 해결하기 위해 ",
-          },
-          { text: "L1(Caffeine)", kind: "tech" },
-          { text: "와 " },
-          { text: "L2(Redis)", kind: "tech" },
-          {
-            text: " 이중 캐시 환경을 직접 설계하고 도입했습니다. 동일 위치 재요청 시 인스턴스 간 캐시를 공유하여 외부 API 호출을 최소화했으며, 그 결과 API ",
-          },
-          { text: "100회", kind: "metric" },
-          {
-            text: " 호출 기준 응답 시간을 약 ",
-          },
-          { text: "19초", kind: "metric" },
-          {
-            text: "에서 약 ",
-          },
-          { text: "4초", kind: "metric" },
-          { text: "로 " },
-          { text: "78%", kind: "metric" },
-          {
-            text: " 단축하는 성과를 냈습니다.",
-          },
-        ],
-      },
-      {
-        title: [
-          { text: "[" },
-          { text: "트래픽 제어", kind: "keyword" },
-          { text: " 및 " },
-          { text: "병렬 처리", kind: "keyword" },
-          { text: " 도입]" },
-        ],
-        body: [
-          { text: "OpenWeatherMap API", kind: "tech" },
-          {
-            text: "의 분당 ",
-          },
-          { text: "60회", kind: "metric" },
-          {
-            text: " 한도 제약을 분석한 뒤, ",
-          },
-          { text: "Bucket4j", kind: "tech" },
-          {
-            text: "를 활용해 토큰 소비를 제어하는 로직을 선제적으로 구현했습니다. 한도 내에서 ",
-          },
-          { text: "CompletableFuture", kind: "tech" },
-          {
-            text: "와 전용 스레드 풀을 도입해 점수 계산을 병렬로 처리함으로써 시스템 처리 효율을 극대화했습니다.",
+            text: " 격리.",
           },
         ],
       },
@@ -357,7 +383,7 @@ export const projects: Project[] = [
     name: "EZCODE",
     subtitle:
       "AI 코드 리뷰와 캐릭터 성장 시스템을 포함한 코딩 테스트 서비스",
-    period: "2025.06 – 2025.07 (2개월)",
+    period: "2025.06 – 2025.07 (6주)",
     overview: [
       { text: "코딩 테스트", kind: "keyword" },
       {
@@ -450,67 +476,139 @@ export const projects: Project[] = [
       {
         title: [
           { text: "[" },
-          { text: "조회 쿼리 튜닝", kind: "keyword" },
-          { text: " 및 성능 개선]" },
-        ],
-        body: [
+          { text: "트러블슈팅 1", kind: "keyword" },
           {
-            text: "토론글 목록 조회 시 발생하는 다중 서브쿼리의 실행 계획 비효율을 직접 파악하고, ",
-          },
-          { text: "QueryDSL", kind: "tech" },
-          {
-            text: "을 활용해 ",
-          },
-          { text: "JOIN", kind: "tech" },
-          { text: "과 " },
-          { text: "GROUP BY", kind: "tech" },
-          {
-            text: "로 쿼리를 분리하는 튜닝을 진행했습니다. 이를 통해 API 응답 속도를 ",
-          },
-          { text: "314ms", kind: "metric" },
-          {
-            text: "에서 ",
-          },
-          { text: "134ms", kind: "metric" },
-          { text: "로 " },
-          { text: "57%", kind: "metric" },
-          {
-            text: " 향상시켰습니다.",
+            text: "] 다중 집계 쿼리 최적화 및 N+1 문제 원천 차단",
           },
         ],
+        troubleshooting: {
+          problem: [
+            {
+              text: "토론글 목록 페이징 조회 시 다수의 집계/조인이 발생해 실행 계획이 비효율적이었음. 특히 ",
+            },
+            { text: "IN", kind: "tech" },
+            {
+              text: " 절 조회 시 기존 정렬(베스트/추천순)이 깨지고 ",
+            },
+            { text: "N+1", kind: "keyword" },
+            { text: " 문제가 동반됨." },
+          ],
+          thinking: [
+            {
+              text: "페이징을 위한 식별자(",
+            },
+            { text: "ID", kind: "tech" },
+            {
+              text: ") 조회와 상세 데이터 조회의 책임을 ",
+            },
+            { text: "2단계", kind: "keyword" },
+            {
+              text: "로 분리하고, 애플리케이션 메모리 단에서 정렬 재배치 수행.",
+            },
+          ],
+          solution: [
+            { text: "QueryDSL", kind: "tech" },
+            {
+              text: " 쿼리 분리: 정렬 및 페이징 조건이 적용된 ‘ID 목록’을 선행 조회한 후, 해당 ID로 ‘상세 집계 데이터’를 ",
+            },
+            { text: "JOIN", kind: "tech" },
+            { text: "과 " },
+            { text: "GROUP BY", kind: "tech" },
+            {
+              text: "로 한 번에 조회.\n\n",
+            },
+            { text: "메모리 재정렬", kind: "keyword" },
+            {
+              text: ": 조회된 데이터(",
+            },
+            { text: "Map", kind: "tech" },
+            {
+              text: " 구조)를 처음 추출했던 ID 순서에 맞춰 애플리케이션 단에서 안전하게 매핑 및 재배치.",
+            },
+          ],
+          result: [
+            {
+              text: "복잡한 쿼리 실행 계획을 단순화하여 ",
+            },
+            { text: "N+1", kind: "keyword" },
+            {
+              text: " 문제 해결. API 응답 속도 ",
+            },
+            { text: "314ms → 134ms", kind: "metric" },
+            { text: " (" },
+            { text: "57% 향상", kind: "metric" },
+            { text: ") 달성." },
+          ],
+        },
       },
       {
         title: [
           { text: "[" },
-          { text: "비동기 파이프라인", kind: "keyword" },
-          { text: " 설계 및 안정성 확보]" },
-        ],
-        body: [
-          { text: "Spring Event", kind: "tech" },
+          { text: "트러블슈팅 2", kind: "keyword" },
           {
-            text: " 방식의 ",
-          },
-          { text: "메시지 유실", kind: "keyword" },
-          {
-            text: " 위험을 파악한 후, 이를 ",
-          },
-          { text: "ActiveMQ", kind: "tech" },
-          {
-            text: " 기반의 비동기 처리로 전환하여 ",
-          },
-          { text: "데이터 내구성", kind: "keyword" },
-          {
-            text: "을 직접 확보했습니다. 또한 ",
-          },
-          { text: "서킷 브레이커", kind: "keyword" },
-          {
-            text: " 패턴과 스케줄러 기반 재처리 로직을 주도적으로 도입하여 ",
-          },
-          { text: "DB", kind: "tech" },
-          {
-            text: " 장애가 서비스 전체로 전파되는 것을 방지했습니다.",
+            text: "] 알림 파이프라인 연쇄 장애 방지 및 내구성 확보",
           },
         ],
+        troubleshooting: {
+          problem: [
+            { text: "Spring Event", kind: "tech" },
+            {
+              text: " 기반 알림은 서버 다운 시 메시지 유실 위험이 있고, 알림 DB(",
+            },
+            { text: "MongoDB", kind: "tech" },
+            {
+              text: ") 장애 시 메인 비즈니스(게시글 작성 등)까지 롤백되는 ",
+            },
+            { text: "연쇄 장애", kind: "keyword" },
+            { text: " 가능성 존재." },
+          ],
+          thinking: [
+            {
+              text: "메인 비즈니스와 알림 처리 간 ",
+            },
+            { text: "결합도", kind: "keyword" },
+            {
+              text: "를 낮추고, ",
+            },
+            { text: "서킷 브레이커", kind: "keyword" },
+            {
+              text: "를 통한 장애 물리적 ",
+            },
+            { text: "격리(Isolation)", kind: "keyword" },
+            { text: " 적용." },
+          ],
+          solution: [
+            { text: "MQ", kind: "keyword" },
+            { text: " 전환 및 트랜잭션 분리: " },
+            { text: "ActiveMQ", kind: "tech" },
+            {
+              text: "로 이벤트 비동기 발행. 알림 트랜잭션을 ",
+            },
+            { text: "REQUIRES_NEW", kind: "tech" },
+            {
+              text: "로 분리해 실패 시에도 메인 로직은 커밋되도록 결합도 차단.\n\n",
+            },
+            { text: "서킷 브레이커", kind: "keyword" },
+            { text: " 및 재처리: " },
+            { text: "Resilience4j", kind: "tech" },
+            {
+              text: "로 DB 장애 시 ",
+            },
+            { text: "Fast-Fail", kind: "keyword" },
+            {
+              text: " 유도. 실패 내역은 별도 로그로 남기고 스케줄러로 큐에 재발행하는 ",
+            },
+            { text: "멱등", kind: "keyword" },
+            { text: " 보장 로직 구현." },
+          ],
+          result: [
+            {
+              text: "알림 DB 장애나 트래픽 폭주 시에도 메인 서비스 로직이 영향을 받지 않는 고가용성 ",
+            },
+            { text: "메시징", kind: "keyword" },
+            { text: " 파이프라인 완성." },
+          ],
+        },
       },
       {
         title: [
@@ -521,13 +619,13 @@ export const projects: Project[] = [
         body: [
           { text: "프론트엔드", kind: "tech" },
           {
-            text: " 연동 중 발생한 예외 상황(",
+            text: " 연동 예외(",
           },
-          { text: "JSON 파싱 에러", kind: "keyword" },
-          { text: " 등)과 " },
+          { text: "JSON 파싱", kind: "keyword" },
+          { text: " 등)·" },
           { text: "Git", kind: "tech" },
           {
-            text: " 머지 충돌 과정에서 팀 내 코드 리뷰와 원인 분석 회의를 주도했습니다. 이슈를 신속히 공유하고 해결 방안을 도출하여 서비스 통합 과정을 매끄럽게 이끌었습니다.",
+            text: " 머지 충돌 시 코드 리뷰·원인 분석 회의를 주도해 통합 일정을 맞춤.",
           },
         ],
       },
