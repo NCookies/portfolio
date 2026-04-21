@@ -1,9 +1,12 @@
 import type { RichSegment } from "@/lib/portfolio-types";
 
+/** 본문 인라인 강조 — 종류와 관계없이 동일 톤(인디고) */
+const highlightClass = "font-bold text-indigo-800 print:text-indigo-900";
+
 const kindClass: Record<NonNullable<RichSegment["kind"]>, string> = {
-  metric: "font-bold text-indigo-700",
-  keyword: "font-bold text-emerald-800",
-  tech: "font-bold text-sky-800",
+  metric: highlightClass,
+  keyword: highlightClass,
+  tech: highlightClass,
 };
 
 type RichTextProps = {

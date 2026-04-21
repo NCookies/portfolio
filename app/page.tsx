@@ -34,12 +34,9 @@ const troubleshootPill = {
     "bg-indigo-900/95 text-indigo-100 ring-1 ring-indigo-800/50 print:bg-indigo-950 print:text-indigo-100",
 } as const;
 
-/** keywordParagraphs — 행마다 다른 색 */
-const keywordPillRotate = [
-  "bg-rose-900/95 text-rose-50 ring-1 ring-rose-800/60 print:bg-rose-900 print:text-rose-50",
-  "bg-indigo-900/95 text-indigo-100 ring-1 ring-indigo-800/50 print:bg-indigo-950 print:text-indigo-100",
-  "bg-emerald-800/95 text-emerald-50 ring-1 ring-emerald-700/50 print:bg-emerald-900 print:text-emerald-50",
-] as const;
+/** keywordParagraphs 태그 pill — 본문 인라인 강조와 맞춘 인디고 톤 */
+const keywordPill =
+  "bg-indigo-900/95 text-indigo-100 ring-1 ring-indigo-800/50 print:bg-indigo-950 print:text-indigo-100";
 
 /** 태그는 본문 블록 상단(첫 줄)과 맞춤 — 영역 구분이 분명해짐 */
 const troubleshootingGrid =
@@ -190,13 +187,23 @@ export default function Home() {
               {meta.tagline.trim()}
             </p>
           ) : null}
-          <div className={`${aboutText} text-pretty max-w-none`}>
+          <ul
+            className={`m-0 list-none space-y-4 p-0 ${aboutText} text-pretty max-w-none`}
+          >
             {summaryParagraphs.map((para, i) => (
-              <p key={i} className="mb-4 last:mb-0">
-                <RichText segments={para} />
-              </p>
+              <li key={i} className="flex gap-2.5">
+                <span
+                  className="shrink-0 font-medium text-slate-400 print:text-slate-500"
+                  aria-hidden
+                >
+                  *
+                </span>
+                <div className="min-w-0 flex-1">
+                  <RichText segments={para} />
+                </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
 
         <section className="mb-14 print:mb-12">
@@ -306,14 +313,11 @@ export default function Home() {
                                   tag: "결과",
                                   pill: troubleshootPill.result,
                                   segments: h.troubleshooting.result,
-                                  metricClass:
-                                    "font-bold text-blue-600 print:text-blue-700",
                                 },
                               ] satisfies {
                                 tag: string;
                                 pill: string;
                                 segments: (typeof h.troubleshooting)["problem"];
-                                metricClass?: string;
                               }[]
                             ).map((row) => (
                               <Fragment key={row.tag}>
@@ -323,10 +327,7 @@ export default function Home() {
                                   {row.tag}
                                 </span>
                                 <p className={`${bodyTroubleP} print:text-slate-800`}>
-                                  <RichText
-                                    segments={row.segments}
-                                    metricClassName={row.metricClass}
-                                  />
+                                  <RichText segments={row.segments} />
                                 </p>
                               </Fragment>
                             ))}
@@ -336,7 +337,7 @@ export default function Home() {
                             {h.keywordParagraphs.map((kp, ki) => (
                               <Fragment key={kp.keyword}>
                                 <span
-                                  className={`${pillTagKeyword} ${keywordPillRotate[ki % keywordPillRotate.length]}`}
+                                  className={`${pillTagKeyword} ${keywordPill}`}
                                 >
                                   {kp.keyword}
                                 </span>
