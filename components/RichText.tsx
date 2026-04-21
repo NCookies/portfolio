@@ -1,10 +1,11 @@
 import type { RichSegment } from "@/lib/portfolio-types";
 
 /** 본문 인라인 강조 — 종류와 관계없이 동일 톤(인디고) */
-const highlightClass = "font-bold text-indigo-800 print:text-indigo-900";
+const highlightClass =
+  "font-bold text-indigo-800 print:text-indigo-900 dark:text-indigo-300 dark:print:text-indigo-900";
 
 const linkClass =
-  "pdf-append-href-in-print break-all font-medium text-indigo-800 underline decoration-indigo-300 decoration-1 underline-offset-[3px] hover:text-indigo-950 print:text-indigo-900 print:decoration-indigo-400";
+  "break-all font-medium text-indigo-800 underline decoration-indigo-300 decoration-1 underline-offset-[3px] hover:text-indigo-950 print:text-indigo-900 print:decoration-indigo-400 dark:text-indigo-300 dark:decoration-indigo-600 dark:hover:text-indigo-200 dark:print:text-indigo-900 dark:print:decoration-indigo-400";
 
 const kindClass: Record<NonNullable<RichSegment["kind"]>, string> = {
   metric: highlightClass,

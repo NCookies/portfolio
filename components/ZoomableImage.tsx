@@ -81,7 +81,7 @@ export function ZoomableImage(props: ZoomableImageProps) {
     <>
       <button
         type="button"
-        className="block w-full cursor-zoom-in text-left outline-none transition hover:opacity-[0.97] focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 print:cursor-default print:border-none print:bg-transparent print:p-0 print:shadow-none"
+        className="block w-full cursor-zoom-in text-left outline-none transition hover:opacity-[0.97] focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-100 dark:focus-visible:ring-offset-slate-900 print:cursor-default print:border-none print:bg-transparent print:p-0 print:shadow-none dark:print:ring-offset-transparent"
         aria-label={`${props.alt} — 클릭하여 확대`}
         aria-haspopup="dialog"
         aria-expanded={open}
